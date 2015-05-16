@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Random</string>
+
+    <string name="field1">How many?</string>
+    <string name="field2">Highest number?</string>
+    <string name="field3">Press run to show numbers…</string>
+
+    <string name="checkbox1">Unique?</string>
+    <string name="checkbox2">Joker?</string>
+
+    <string name="button1">Run</string>
+
+    <string name="error1">Input values!</string>
+    <string name="error2">Increase highest value!</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
