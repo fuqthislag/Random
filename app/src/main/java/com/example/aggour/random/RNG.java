@@ -47,4 +47,3 @@ public class RNG {
             this.result += list.get(i) + " ";
     }
 }
-

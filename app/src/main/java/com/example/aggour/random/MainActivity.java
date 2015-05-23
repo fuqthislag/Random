@@ -36,7 +36,6 @@ public class MainActivity extends ActionBarActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 RNG RngObject = new RNG(
                         editText.getText().toString(),
                         editText2.getText().toString(),
