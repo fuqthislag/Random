@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -41,99 +42,17 @@ public class MainActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AsyncTask<Object, String, Void>() {
-                    @Override
-                    protected void onProgressUpdate(String... values) {
-                        textView.setText(values[0]);
-                        textView2.setText(values[1]);
-                        editText2.setText(values[2]);
-                        editText4.setText(values[3]);
-                    }
-
-                    @Override
-                    protected Void doInBackground(Object... params) {
-                        String editText = (String) params[0];
-                        String editText2 = (String) params[1];
-                        String editText3 = (String) params[2];
-                        String editText4 = (String) params[3];
-                        Boolean checkBox = (Boolean) params[4];
-
-                        int i, many, max, many2, max2;
-                        String result = "", result2 = "", correct = "", correct2 = "";
-
-                        if (editText == "" || editText2 == "") {
-                            many = 1;
-                            max = 1;
-                        } else {
-                            many = Integer.parseInt(editText);
-                            max = Integer.parseInt(editText2);
-                            if (checkBox && max < many) {
-                                max = many;
-                                correct = String.valueOf(max);
-                                publishProgress(result, result2, correct, correct2);
-                            }
-                        }
-
-                        if (editText3 == "" || editText4 == "") {
-                            many2 = 1;
-                            max2 = 1;
-                        } else {
-                            many2 = Integer.parseInt(editText3);
-                            max2 = Integer.parseInt(editText4);
-                            if (checkBox && max2 < many2) {
-                                max2 = many2;
-                                correct2 = String.valueOf(max2);
-                                publishProgress(result, result2, correct, correct2);
-                            }
-                        }
-
-                        correct = String.valueOf(max);
-                        correct2 = String.valueOf(max2);
-
-                        try {
-                            if (checkBox) {
-                                ArrayList<Integer> list = new ArrayList<>();
-                                for (i = 1; i <= max; i++)
-                                    list.add(i);
-                                Collections.shuffle(list);
-                                for (i = 0; i < many; i++) {
-                                    result += list.get(i) + " ";
-                                    Thread.sleep(17);
-                                    publishProgress(result, result2, correct, correct2);
-                                }
-                                ArrayList<Integer> list2 = new ArrayList<>();
-                                for (i = 1; i <= max2; i++)
-                                    list2.add(i);
-                                Collections.shuffle(list2);
-                                for (i = 0; i < many2; i++) {
-                                    result2 += list2.get(i) + " ";
-                                    Thread.sleep(17);
-                                    publishProgress(result, result2, correct, correct2);
-                                }
-                            } else {
-                                Random rand = new Random();
-                                for (i = 0; i < many; i++) {
-                                    result += 1 + rand.nextInt(max) + " ";
-                                    Thread.sleep(17);
-                                    publishProgress(result, result2, correct, correct2);
-                                }
-                                for (i = 0; i < many2; i++) {
-                                    result2 += 1 + rand.nextInt(max2) + " ";
-                                    Thread.sleep(17);
-                                    publishProgress(result, result2, correct, correct2);
-                                }
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        return null;
-                    }
-                }.execute(
+                new ThreadMe().execute(
                         editText.getText().toString() + "",
-                        editText2.getText().toString() + "",
+                        editText2,
+                        checkBox.isChecked(),
+                        textView);
+
+                new ThreadMe().execute(
                         editText3.getText().toString() + "",
-                        editText4.getText().toString() + "",
-                        checkBox.isChecked());
+                        editText4,
+                        checkBox.isChecked(),
+                        textView2);
             }
         });
 
@@ -151,4 +70,63 @@ public class MainActivity extends Activity {
         });
     }
 
+    public class ThreadMe extends AsyncTask<Object, Object, Void> {
+
+        @Override
+        protected void onProgressUpdate(Object... values) {
+            String result = (String) values[0];
+            String correct = (String) values[1];
+            EditText editText2 = (EditText) values[2];
+            TextView textView = (TextView) values[3];
+
+            textView.setText(result);
+            editText2.setText(correct);
+        }
+
+        @Override
+        protected Void doInBackground(Object... params) {
+            String editText = (String) params[0];
+            EditText editText2 = (EditText) params[1];
+            Boolean checkBox = (Boolean) params[2];
+            TextView textView = (TextView) params[3];
+
+            String txt2 = editText2.getText().toString() + "";
+
+            int i, many, max;
+            String result = "", correct;
+
+            if (editText == "" || txt2 == "") {
+                many = 1;
+                max = 1;
+            } else {
+                many = Integer.parseInt(editText);
+                max = Integer.parseInt(txt2);
+                if (checkBox && max < many) {
+                    max = many;
+                }
+            }
+
+            correct = String.valueOf(max);
+            publishProgress(result, correct, editText2, textView);
+
+
+            if (checkBox) {
+                ArrayList<Integer> list = new ArrayList<>();
+                for (i = 1; i <= max; i++)
+                    list.add(i);
+                Collections.shuffle(list);
+                for (i = 0; i < many; i++) {
+                    result += list.get(i) + " ";
+                    publishProgress(result, correct, editText2, textView);
+                }
+            } else {
+                Random rand = new Random();
+                for (i = 0; i < many; i++) {
+                    result += 1 + rand.nextInt(max) + " ";
+                    publishProgress(result, correct, editText2, textView);
+                }
+            }
+            return null;
+        }
+    }
 }
